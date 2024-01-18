@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>400</height>
+    <width>871</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,13 +40,49 @@
      <string>Save</string>
     </property>
    </widget>
+   <widget class="QLabel" name="imageLabel1">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>50</y>
+      <width>400</width>
+      <height>400</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Original picture will be here</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="imageLabel2">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>50</y>
+      <width>400</width>
+      <height>400</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Resulting picture</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>10</y>
+      <width>201</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>592</width>
+     <width>871</width>
      <height>22</height>
     </rect>
    </property>
