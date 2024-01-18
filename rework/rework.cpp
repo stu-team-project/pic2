@@ -21,11 +21,11 @@ void rework::on_openButton_clicked() {
             if (!image.isNull()) {
                 ui.imageLabel1->setPixmap(QPixmap::fromImage(image));
 
-                ////testing compatibility
-                //QVector<QVector<QColor>> to_modify = Filters::imageToVector(image);
-                //Filters::blackAndWhite(&to_modify, image.height(), image.width());
-                //QImage image2 = Filters::vectorToImage(to_modify);
-                //ui.imageLabel2->setPixmap(QPixmap::fromImage(image2));
+                //testing compatibility
+                QVector<QVector<QColor>> to_modify = Filters::imageToVector(image);
+                Filters::inverse(&to_modify, image.height(), image.width());
+                QImage image2 = Filters::vectorToImage(to_modify);
+                ui.imageLabel2->setPixmap(QPixmap::fromImage(image2));
             }
             else {
 

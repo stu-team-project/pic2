@@ -87,4 +87,28 @@ public:
             tmpVec.clear();
         }
     }
+    static void inverse(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        int diff;
+        const int maxValue = 255;
+        const int minValue = 0;
+        QVector<QColor>tmpVec;
+        QColor inverseColor;
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                diff = maxValue - VecOfPixelsColor2D->at(i).at(j).red();
+                inverseColor.setRed(minValue + diff);
+                diff = maxValue - VecOfPixelsColor2D->at(i).at(j).green();
+                inverseColor.setGreen(minValue + diff);
+                diff = maxValue - VecOfPixelsColor2D->at(i).at(j).blue();
+                inverseColor.setBlue(minValue + diff);
+
+                tmpVec.append(inverseColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
 };
