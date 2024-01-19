@@ -1,6 +1,7 @@
 #pragma once
 
 // This file contains
+// 0. libraries
 // 1. class rework and procedures' declarations
 // 2. class for filters and compatibility functions (immediately definition)
 
@@ -11,6 +12,7 @@
 //https://doc.qt.io/qt-6/qimage.html#reading-and-writing-image-files
 
 #include <QFileDialog>
+#include <QImageWriter>
 
 #include <QVector>
 #include <QColor>
@@ -25,10 +27,11 @@ public:
 
 private:
     Ui::reworkClass ui;
-    QImage start_image, new_image, new_image2;
+    QImage image0, image1, image2, image3; //0 original, 1 output, 2 and 3 helpers
 
 private slots:
     void on_openButton_clicked();
+    void on_saveButton_clicked();
 };
 
 class Filters
@@ -139,6 +142,103 @@ public:
             }
             VecOfPixelsColor2D->replace(i, tmpVec);
             tmpVec.clear();
+        }
+    }
+    static int bounds(int a, int lb, int rb){
+        int result = a < lb ? lb : a;
+        result = a < rb ? a : rb;
+        return result;
+    }
+    static QColor modifyColor(QColor& color, int errorR, int errorG, int errorB, int weight) { 
+        QColor newColor;
+        newColor.setRed(bounds(color.red() + errorR * weight / 16, 0, 255));
+        newColor.setGreen(bounds( color.green() + errorG * weight / 16, 0, 255));
+        newColor.setBlue(bounds( color.blue() + errorB * weight / 16, 0, 255));
+        return newColor;
+    }
+    static QColor findClosestColor(QColor& color, QVector<QColor>& colorset) {
+        int minDist = INT_MAX;
+        QColor closestColor;
+        for (const QColor& col : colorset) {
+            int dist = qPow(col.red() - color.red(), 2) +
+                qPow(col.green() - color.green(), 2) +
+                qPow(col.blue() - color.blue(), 2);
+            if (dist < minDist) {
+                minDist = dist;
+                closestColor = col;
+            }
+        }
+        return closestColor;
+    }
+    static void closestcmyk(QImage& image) {
+        QVector<QColor> colorset = {
+            QColor::fromRgb(0, 0, 0),      // Black
+            QColor::fromRgb(255, 255, 255),// White
+            QColor::fromRgb(0, 255, 255),  // Cyan
+            QColor::fromRgb(255, 0, 255),  // Magenta
+            QColor::fromRgb(255, 255, 0)   // Yellow
+        };
+
+        int width = image.width();
+        int height = image.height();
+        QColor oldColor, newColor;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                QColor oldColor = image.pixelColor(x, y);
+                QColor newColor = findClosestColor(oldColor, colorset);
+                image.setPixelColor(x, y, newColor);
+            }
+        }
+    }
+    static void dithercmyk(QImage& image) {
+        // https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
+        QVector<QColor> colorset = {
+            QColor::fromRgb(0, 0, 0),      // Black
+            QColor::fromRgb(255, 255, 255),// White
+            QColor::fromRgb(0, 255, 255),  // Cyan
+            QColor::fromRgb(255, 0, 255),  // Magenta
+            QColor::fromRgb(255, 255, 0)   // Yellow
+        };
+
+        int width = image.width();
+        int height = image.height();
+        QColor oldColor, newColor;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                QColor oldColor = image.pixelColor(x,y);
+                QColor newColor = findClosestColor(oldColor, colorset);
+                image.setPixelColor(x,y,newColor);
+
+                int errorR = oldColor.red() - newColor.red();
+                int errorG = oldColor.green() - newColor.green();
+                int errorB = oldColor.blue() - newColor.blue();
+
+                //and no about neighbours
+                QColor neighbourColor;
+                if (x + 1 < width) {
+                    oldColor = image.pixelColor(x + 1, y);
+                    newColor = modifyColor(oldColor, errorR, errorG, errorB, 7);
+                    image.setPixelColor(x+1, y, newColor);
+                }
+                if (y + 1 < height) {
+                    if (x - 1 >= 0) {
+                        //modifyColor(tmpPixels[x - 1][y + 1], errorR, errorG, errorB, 3);
+                        oldColor = image.pixelColor(x -1, y+1);
+                        newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
+                        image.setPixelColor(x-1, y+1, newColor);
+                    }
+                    //modifyColor(tmpPixels[x][y + 1], errorR, errorG, errorB, 5);
+                    oldColor = image.pixelColor(x, y + 1);
+                    newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
+                    image.setPixelColor(x, y + 1, newColor);
+                    if (x + 1 < width) {
+                        //modifyColor(tmpPixels[x + 1][y + 1], errorR, errorG, errorB, 1);
+                        oldColor = image.pixelColor(x + 1, y + 1);
+                        newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
+                        image.setPixelColor(x + 1, y + 1, newColor);
+                    }
+                }
+            }
         }
     }
 
