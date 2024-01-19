@@ -145,6 +145,7 @@ public:
             tmpVec.clear();
         }
     }
+    //Nikita's new filters
     static int bounds(int a, int lb, int rb){
         int result = a < lb ? lb : a;
         result = a < rb ? a : rb;
@@ -179,7 +180,6 @@ public:
             QColor::fromRgb(255, 0, 255),  // Magenta
             QColor::fromRgb(255, 255, 0)   // Yellow
         };
-
         int width = image.width();
         int height = image.height();
         QColor oldColor, newColor;
@@ -200,7 +200,6 @@ public:
             QColor::fromRgb(255, 0, 255),  // Magenta
             QColor::fromRgb(255, 255, 0)   // Yellow
         };
-
         int width = image.width();
         int height = image.height();
         QColor oldColor, newColor;
@@ -214,7 +213,7 @@ public:
                 int errorG = oldColor.green() - newColor.green();
                 int errorB = oldColor.blue() - newColor.blue();
 
-                //and no about neighbours
+                //and now about neighbours
                 QColor neighbourColor;
                 if (x + 1 < width) {
                     oldColor = image.pixelColor(x + 1, y);
@@ -223,17 +222,14 @@ public:
                 }
                 if (y + 1 < height) {
                     if (x - 1 >= 0) {
-                        //modifyColor(tmpPixels[x - 1][y + 1], errorR, errorG, errorB, 3);
                         oldColor = image.pixelColor(x -1, y+1);
                         newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
                         image.setPixelColor(x-1, y+1, newColor);
                     }
-                    //modifyColor(tmpPixels[x][y + 1], errorR, errorG, errorB, 5);
                     oldColor = image.pixelColor(x, y + 1);
                     newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
                     image.setPixelColor(x, y + 1, newColor);
                     if (x + 1 < width) {
-                        //modifyColor(tmpPixels[x + 1][y + 1], errorR, errorG, errorB, 1);
                         oldColor = image.pixelColor(x + 1, y + 1);
                         newColor = modifyColor(oldColor, errorR, errorG, errorB, 3);
                         image.setPixelColor(x + 1, y + 1, newColor);

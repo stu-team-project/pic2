@@ -6,19 +6,95 @@ rework::rework(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
-    //fill combobox here with new filter
+   
+    ui.saveButton->setEnabled(false);
+    ui.comboBox->setEnabled(false);
+    //fill combobox here with new filters
     ui.comboBox->addItem("Sparse-cmyk");
     ui.comboBox->addItem("Dense-cmyk");
     ui.comboBox->addItem("Closest-cmyk");
     ui.comboBox->addItem("Dithering-cmyk");
-    ui.comboBox->addItem("Black & White");
-    ui.comboBox->addItem("Densecmyk");
-    ui.comboBox->addItem("Densecmyk");
+    ui.comboBox->addItem("Strong edge");
+    ui.comboBox->addItem("Kuwahara");
+    ui.comboBox->addItem("Comix");
+    ui.comboBox->addItem("Black and white");
+    ui.comboBox->addItem("Inverse");
+    ui.comboBox->addItem("RedFilter");
+    ui.comboBox->addItem("FindingEdge");
+    ui.comboBox->addItem("Blur 3x3");
+    ui.comboBox->addItem("Blur 5x5");
+    ui.comboBox->addItem("Blur 7x7");
 
 }
-
-rework::~rework()
-{}
+rework::~rework(){}
+void rework::on_comboBox_activated(int index) {
+    ui.imageLabel2->clear();
+    image1 = image0;
+    QVector<QVector<QColor>> to_modify;
+    switch (index)
+    {
+    case 0:
+        to_modify = Filters::imageToVector(image1);
+        Filters::sparsecmyk(&to_modify);
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 1:
+        to_modify = Filters::imageToVector(image1);
+        Filters::densecmyk(&to_modify);
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 2: Filters::closestcmyk(image1); break;
+    case 3: Filters::dithercmyk(image1); break;
+    case 4:
+        //Nikitas strong_edges
+        break;
+    case 5:
+        //Nikitas Kuwahara
+        break;
+    case 6:
+        //Nikitas comix
+        break;
+    case 7:
+        to_modify = Filters::imageToVector(image1);
+        Filters::blackAndWhite(&to_modify,image1.height(),image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 8:
+        to_modify = Filters::imageToVector(image1);
+        Filters::inverse(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 9:
+        to_modify = Filters::imageToVector(image1);
+        Filters::redFilter(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 10:
+        to_modify = Filters::imageToVector(image1);
+        Filters::findingEdge(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 11:
+        to_modify = Filters::imageToVector(image1);
+        Filters::blur3x3(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 12:
+        to_modify = Filters::imageToVector(image1);
+        Filters::blur5x5(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 13:
+        to_modify = Filters::imageToVector(image1);
+        Filters::blur7x7(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    default:
+        break;
+    }
+    ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));
+    ui.saveButton->setEnabled(true);
+}
 
 void rework::on_openButton_clicked() {
 	try{
@@ -27,6 +103,7 @@ void rework::on_openButton_clicked() {
             image0.load(fileName);
             if (!image0.isNull()) {
                 ui.imageLabel1->setPixmap(QPixmap::fromImage(image0));
+                ui.comboBox->setEnabled(true);
             }
             else {
 
@@ -73,29 +150,3 @@ void rework::on_saveButton_clicked() {
     }
 }
 
-void rework::on_comboBox_activated(int index) {
-    ui.imageLabel2->clear();
-    image1 = image0;
-    QVector<QVector<QColor>> to_modify;
-    switch (index)
-    {case 0:
-        to_modify = Filters::imageToVector(image1);
-        Filters::sparsecmyk(&to_modify);
-        image1 = Filters::vectorToImage(to_modify);
-        break;
-    case 1:
-        to_modify = Filters::imageToVector(image1);
-        Filters::densecmyk(&to_modify);
-        image1 = Filters::vectorToImage(to_modify);
-        break;
-    case 2:
-        Filters::closestcmyk(image1);
-        break;
-    case 3:
-        Filters::dithercmyk(image1);
-        break;
-    default:
-        break;
-    }
-    ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));
-}
