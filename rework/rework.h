@@ -179,6 +179,57 @@ public:
             tmpVec.clear();
         }
     }
+    static void findingEdge(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        const QVector<QVector<QColor>> tmpVecOfPixelsColor2D = *VecOfPixelsColor2D;
+        QVector<QColor>boundaryOfPixel;
+        QVector<QColor>tmpVec;
+        QVector<int> RGBForXDirection, RGBForYDirection;
+        QColor blurColor, averageColor;
+        int red(0), green(0), blue(0), sum(0);
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red += VecOfPixelsColor2D->at(i).at(j).red();
+                green += VecOfPixelsColor2D->at(i).at(j).green();
+                blue += VecOfPixelsColor2D->at(i).at(j).blue();
+                sum++;
+            }
+        }
+        averageColor.setRed(red / sum);
+        averageColor.setGreen(green / sum);
+        averageColor.setBlue(blue / sum);
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                boundaryOfPixel = fillMask(&tmpVecOfPixelsColor2D, averageColor, i, j, height, width, 1);
+
+                RGBForXDirection = SobelOperatorX(&boundaryOfPixel);
+                RGBForYDirection = SobelOperatorY(&boundaryOfPixel);
+
+                red = (RGBForXDirection.at(0) * RGBForXDirection.at(0) + RGBForYDirection.at(0) * RGBForYDirection.at(0));
+                red = pow(red, 0.5);
+                green = (RGBForXDirection.at(1) * RGBForXDirection.at(1) + RGBForYDirection.at(1) * RGBForYDirection.at(1));
+                green = pow(green, 0.5);
+                blue = (RGBForXDirection.at(2) * RGBForXDirection.at(2) + RGBForYDirection.at(2) * RGBForYDirection.at(2));
+                blue = pow(blue, 0.5);
+
+
+                blurColor.setRed(red);
+                blurColor.setGreen(green);
+                blurColor.setBlue(blue);
+
+                tmpVec.append(blurColor);
+                boundaryOfPixel.clear();
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
     static void blur(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width, int variance)
     {
         const QVector<QVector<QColor>> tmpVecOfPixelsColor2D = *VecOfPixelsColor2D;
@@ -206,6 +257,18 @@ public:
             VecOfPixelsColor2D->replace(i, tmpVec);
             tmpVec.clear();
         }
+    }
+    static void blur3x3(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        blur(VecOfPixelsColor2D, height, width, 1);
+    }
+    static void blur5x5(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        blur(VecOfPixelsColor2D, height, width, 2);
+    }
+    static void blur7x7(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        blur(VecOfPixelsColor2D, height, width, 3);
     }
     static QVector<QColor> fillMask(const QVector<QVector<QColor>>* tmpVecOfPixelsColor2D, QColor averageColor, int i, int j, int height, int width, int variance)
     {
