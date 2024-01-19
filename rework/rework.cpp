@@ -23,7 +23,7 @@ void rework::on_openButton_clicked() {
 
                 //testing compatibility
                 QVector<QVector<QColor>> to_modify = Filters::imageToVector(image);
-                Filters::inverse(&to_modify, image.height(), image.width());
+                Filters::redFilter(&to_modify, image.height(), image.width());
                 QImage image2 = Filters::vectorToImage(to_modify);
                 ui.imageLabel2->setPixmap(QPixmap::fromImage(image2));
             }

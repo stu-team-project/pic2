@@ -111,4 +111,38 @@ public:
             tmpVec.clear();
         }
     }
+    static void redFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        int red, green, blue, average;
+        QVector<QColor>tmpVec;
+        QColor redTmpColor;
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red = VecOfPixelsColor2D->at(i).at(j).red();
+                green = VecOfPixelsColor2D->at(i).at(j).green();
+                blue = VecOfPixelsColor2D->at(i).at(j).blue();
+
+                average = (red + green + blue) / 3;
+
+                if (red + 100 > 255)
+                {
+                    red = 255;
+                }
+                else
+                {
+                    red += 100;
+                }
+
+                redTmpColor.setRed(red);
+                redTmpColor.setGreen(green);
+                redTmpColor.setBlue(blue);
+
+                tmpVec.append(redTmpColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
 };
