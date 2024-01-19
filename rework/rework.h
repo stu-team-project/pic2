@@ -32,6 +32,7 @@ private:
 private slots:
     void on_openButton_clicked();
     void on_saveButton_clicked();
+    void on_comboBox_activated(int index);
 };
 
 class Filters
@@ -39,7 +40,7 @@ class Filters
 public:
 
     //Comptibility with older functions
-    static QVector<QVector<QColor>> imageToVector(const QImage& image) {
+    static QVector<QVector<QColor>> imageToVector(QImage& image) {
         QVector<QVector<QColor>> result;
         for (int y = 0; y < image.height(); ++y) {
             QVector<QColor> row;
@@ -50,7 +51,7 @@ public:
         }
         return result;
     }
-    static QImage vectorToImage(const QVector<QVector<QColor>>& colorVector) {
+    static QImage vectorToImage(QVector<QVector<QColor>>& colorVector) {
         int width = colorVector.isEmpty() ? 0 : colorVector[0].size();
         int height = colorVector.size();
         QImage result(width, height, QImage::Format_ARGB32); // not sure about the format
@@ -66,7 +67,7 @@ public:
     static int randlimit(int limit) { //run """srand((unsigned int)time(NULL));""" first
         return rand() % limit;
     }
-    static void OLDcmykFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D)
+    static void sparsecmyk(QVector<QVector<QColor>>* VecOfPixelsColor2D)
     {
         //no halftone
         //use 4pixel dithering
@@ -96,7 +97,7 @@ public:
             tmpVec.clear();
         }
     }
-    static void OLDdensecmykFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D)
+    static void densecmyk(QVector<QVector<QColor>>* VecOfPixelsColor2D)
     {
         srand((unsigned int)time(NULL));
         QVector<QColor> tmpVec;

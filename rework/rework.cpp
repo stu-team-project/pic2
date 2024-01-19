@@ -7,6 +7,13 @@ rework::rework(QWidget *parent)
 {
     ui.setupUi(this);
     //fill combobox here with new filter
+    ui.comboBox->addItem("Sparse-cmyk");
+    ui.comboBox->addItem("Dense-cmyk");
+    ui.comboBox->addItem("Closest-cmyk");
+    ui.comboBox->addItem("Dithering-cmyk");
+    ui.comboBox->addItem("Black & White");
+    ui.comboBox->addItem("Densecmyk");
+    ui.comboBox->addItem("Densecmyk");
 
 }
 
@@ -17,19 +24,9 @@ void rework::on_openButton_clicked() {
 	try{
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Images (*.png *.xpm *.jpg *.ppm)"));
         if (!fileName.isEmpty()) {
-            QImage image0(fileName);
+            image0.load(fileName);
             if (!image0.isNull()) {
                 ui.imageLabel1->setPixmap(QPixmap::fromImage(image0));
-
-                //testing compatibility
-                /*QVector<QVector<QColor>> to_modify = Filters::imageToVector(image);
-                Filters::OLDdensecmykFilter(&to_modify);
-                QImage image2 = Filters::vectorToImage(to_modify);
-                ui.imageLabel2->setPixmap(QPixmap::fromImage(image2));*/
-
-                image1 = image0;
-                Filters::dithercmyk(image1);
-                ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));
             }
             else {
 
@@ -41,6 +38,18 @@ void rework::on_openButton_clicked() {
 
 	}
 }
+
+
+////testing compatibility
+//QVector<QVector<QColor>> to_modify = Filters::imageToVector(image0);
+//Filters::densecmyk(&to_modify);
+//image2 = Filters::vectorToImage(to_modify);
+//ui.imageLabel2->setPixmap(QPixmap::fromImage(image2));
+
+/*image1 = image0;
+Filters::dithercmyk(image1);
+ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));*/
+
 
 void rework::on_saveButton_clicked() {
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("Images (*.png *.jpg *.bmp *.ppm);;All Files (*)"));
@@ -62,4 +71,31 @@ void rework::on_saveButton_clicked() {
     else {
         ui.errorLabel->setText("Writer failed: " + imageWriter.errorString());
     }
+}
+
+void rework::on_comboBox_activated(int index) {
+    ui.imageLabel2->clear();
+    image1 = image0;
+    QVector<QVector<QColor>> to_modify;
+    switch (index)
+    {case 0:
+        to_modify = Filters::imageToVector(image1);
+        Filters::sparsecmyk(&to_modify);
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 1:
+        to_modify = Filters::imageToVector(image1);
+        Filters::densecmyk(&to_modify);
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 2:
+        Filters::closestcmyk(image1);
+        break;
+    case 3:
+        Filters::dithercmyk(image1);
+        break;
+    default:
+        break;
+    }
+    ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));
 }
