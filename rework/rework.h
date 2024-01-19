@@ -145,4 +145,119 @@ public:
             tmpVec.clear();
         }
     }
+    static void blur(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width, int variance)
+    {
+        const QVector<QVector<QColor>> tmpVecOfPixelsColor2D = *VecOfPixelsColor2D;
+        QVector<QColor>boundaryOfPixel;
+        QVector<QColor>tmpVec;
+        QVector<int> RGB;
+        QColor blurColor, averageColor;
+
+        averageColor = getAveragePixel(VecOfPixelsColor2D);
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                boundaryOfPixel = fillMask(&tmpVecOfPixelsColor2D, averageColor, i, j, height, width, variance);
+
+                RGB = gaussMask(&boundaryOfPixel, variance);
+                blurColor.setRed(RGB.at(0));
+                blurColor.setGreen(RGB.at(1));
+                blurColor.setBlue(RGB.at(2));
+
+                tmpVec.append(blurColor);
+                boundaryOfPixel.clear();
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
+    static QVector<QColor> fillMask(const QVector<QVector<QColor>>* tmpVecOfPixelsColor2D, QColor averageColor, int i, int j, int height, int width, int variance)
+    {
+        QVector<QColor> vecOfMask;
+
+        for (int x = i - variance; x <= i + variance; x++)
+        {
+            for (int y = j - variance; y <= j + variance; y++)
+            {
+                if (x < 0 || y < 0 || x >= height || y >= width)
+                {
+                    vecOfMask.append(averageColor);
+                }
+                else
+                {
+                    vecOfMask.append(tmpVecOfPixelsColor2D->at(x).at(y));
+                }
+            }
+        }
+
+        return vecOfMask;
+    }
+    static QColor getAveragePixel(const QVector<QVector<QColor>>* VecOfPixelsColor2D)
+    {
+        QColor averageColor;
+        int red(0), green(0), blue(0), sum(0);
+        int height = VecOfPixelsColor2D->size();
+        int width = VecOfPixelsColor2D->at(0).size();
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red += VecOfPixelsColor2D->at(i).at(j).red();
+                green += VecOfPixelsColor2D->at(i).at(j).green();
+                blue += VecOfPixelsColor2D->at(i).at(j).blue();
+                sum++;
+            }
+        }
+        averageColor.setRed(red / sum);
+        averageColor.setGreen(green / sum);
+        averageColor.setBlue(blue / sum);
+
+        return averageColor;
+    }
+    static QVector<int> gaussMask(QVector<QColor>* mask, int variance)
+    {
+        if (variance > 3 or variance < 1) { variance = 3; };
+        QVector<int> returnRGB;
+        QVector<int> valueOfMask;
+        if (variance == 1)
+        {
+            valueOfMask = { 1,2,1,2,4,2,1,2,1 };
+        }
+        else if (variance == 2)
+        {
+            valueOfMask = { 1,4,7,4,1,4,16,26,16,4,7,26,41,26,7,4,16,26,16,4,1,4,7,4,1 };
+        }
+        else if (variance == 3)
+        {
+            valueOfMask = { 0,0,1,2,1,0,0,0,3,13,22,13,3,0,1,13,59,97,59,13,1,2,22,97,159,97,22,2,1,13,59,97,59,13,1,0,3,13,22,13,3,0,0,0,1,2,1,0,0 };
+        }
+        else
+        {
+            qDebug() << "incorrect value of Variance in function gaussMask";
+        }
+
+        int red(0), green(0), blue(0), sumOfMaskValues(0);
+
+        for (int i = 0; i < valueOfMask.size(); i++)
+        {
+            red += mask->at(i).red() * valueOfMask.at(i);
+            green += mask->at(i).green() * valueOfMask.at(i);
+            blue += mask->at(i).blue() * valueOfMask.at(i);
+            sumOfMaskValues += valueOfMask.at(i);
+        }
+
+        red = red / sumOfMaskValues;
+        returnRGB.append(red);
+
+        green = green / sumOfMaskValues;
+        returnRGB.append(green);
+
+        blue = blue / sumOfMaskValues;
+        returnRGB.append(blue);
+
+        return returnRGB;
+    }
+
 };
