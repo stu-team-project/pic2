@@ -36,7 +36,6 @@ class Filters
 public:
 
     //Comptibility with older functions
-
     static QVector<QVector<QColor>> imageToVector(const QImage& image) {
         QVector<QVector<QColor>> result;
         for (int y = 0; y < image.height(); ++y) {
@@ -48,7 +47,6 @@ public:
         }
         return result;
     }
-
     static QImage vectorToImage(const QVector<QVector<QColor>>& colorVector) {
         int width = colorVector.isEmpty() ? 0 : colorVector[0].size();
         int height = colorVector.size();
@@ -61,7 +59,43 @@ public:
         return result;
     }
 
-    // Janci filters unchanged:
+    // Nikita's old filters:
+    static int randlimit(int limit) { //run """srand((unsigned int)time(NULL));""" first
+        return rand() % limit;
+    }
+    static void OLDcmykFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D)
+    {
+        //no halftone
+        //use 4pixel dithering
+        srand((unsigned int)time(NULL));
+        QVector<QColor> tmpVec;
+        QColor newColor;
+        for (int i = 0; i < VecOfPixelsColor2D->size(); i++) {
+            for (int j = 0; j < VecOfPixelsColor2D->at(i).size(); j++) {
+                int c, m, y, k;
+                VecOfPixelsColor2D->at(i).at(j).getCmyk(&c, &m, &y, &k);
+                newColor.setCmyk(0, 0, 0, 0);
+                if (i % 2 == 0 && j % 2 == 0) {
+                    if (c > randlimit(255)) { newColor.setCmyk(255, 0, 0, 0); }
+                }
+                else if (i % 2 == 1 && j % 2 == 0) {
+                    if (m > randlimit(255)) { newColor.setCmyk(0, 255, 0, 0); }
+                }
+                else if (i % 2 == 0 && j % 2 == 1) {
+                    if (y > randlimit(255)) { newColor.setCmyk(0, 0, 255, 0); }
+                }
+                else if (i % 2 == 1 && j % 2 == 1) {
+                    if (k > randlimit(255)) { newColor.setCmyk(0, 0, 0, 255); }
+                }
+                tmpVec.append(newColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
+
+
+    // Janci filters:
 
     static void blackAndWhite(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width) {
         int gray, red, green, blue;
