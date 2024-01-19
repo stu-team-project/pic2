@@ -259,5 +259,53 @@ public:
 
         return returnRGB;
     }
+    static QVector<int> SobelOperatorX(QVector<QColor>* mask)
+    {
+        QVector<int> returnRGB;
+        QVector<int> valueOfMask{ -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+        int red(0), green(0), blue(0);
+
+        for (int i = 0; i < valueOfMask.size(); i++)
+        {
+            red += mask->at(i).red() * valueOfMask.at(i);
+            green += mask->at(i).green() * valueOfMask.at(i);
+            blue += mask->at(i).blue() * valueOfMask.at(i);
+        }
+
+        red = red / 16;
+        returnRGB.append(red);
+
+        green = green / 16;
+        returnRGB.append(green);
+
+        blue = blue / 16;
+        returnRGB.append(blue);
+
+        return returnRGB;
+    }
+    static QVector<int> SobelOperatorY(QVector<QColor>* mask)
+    {
+        QVector<int> returnRGB;
+        QVector<int> valueOfMask{ -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+        int red(0), green(0), blue(0);
+
+        for (int i = 0; i < valueOfMask.size(); i++)
+        {
+            red += mask->at(i).red() * valueOfMask.at(i);
+            green += mask->at(i).green() * valueOfMask.at(i);
+            blue += mask->at(i).blue() * valueOfMask.at(i);
+        }
+
+        red = red / 16;
+        returnRGB.append(red);
+
+        green = green / 16;
+        returnRGB.append(green);
+
+        blue = blue / 16;
+        returnRGB.append(blue);
+
+        return returnRGB;
+    }
 
 };
