@@ -10,17 +10,17 @@ rework::rework(QWidget *parent)
     ui.saveButton->setEnabled(false);
     ui.comboBox->setEnabled(false);
     //fill combobox here with new filters
-    ui.comboBox->addItem("Sparse-cmyk");
+    ui.comboBox->addItem("Sparse-cmyk"); //0
     ui.comboBox->addItem("Dense-cmyk");
     ui.comboBox->addItem("Closest-cmyk");
     ui.comboBox->addItem("Dithering-cmyk");
     ui.comboBox->addItem("Strong edge");
-    ui.comboBox->addItem("Kuwahara");
+    ui.comboBox->addItem("Kuwahara"); //5
     ui.comboBox->addItem("Comix");
-    ui.comboBox->addItem("Black and white");
+    ui.comboBox->addItem("Black and white"); //7
     ui.comboBox->addItem("Inverse");
     ui.comboBox->addItem("RedFilter");
-    ui.comboBox->addItem("FindingEdge");
+    ui.comboBox->addItem("FindingEdge"); //10
     ui.comboBox->addItem("Blur 3x3");
     ui.comboBox->addItem("Blur 5x5");
     ui.comboBox->addItem("Blur 7x7");
@@ -48,9 +48,7 @@ void rework::on_comboBox_activated(int index) {
     case 4:
         //Nikitas strong_edges
         break;
-    case 5:
-        //Nikitas Kuwahara
-        break;
+    case 5: Filters::kuwahara(image0, image1); break;
     case 6:
         //Nikitas comix
         break;

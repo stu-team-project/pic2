@@ -214,6 +214,7 @@ public:
                 int errorB = oldColor.blue() - newColor.blue();
 
                 //and now about neighbours
+                //I intentionally set coeffs to 7,3,3,3 instead of 7,3,5,1. Looks better
                 QColor neighbourColor;
                 if (x + 1 < width) {
                     oldColor = image.pixelColor(x + 1, y);
@@ -237,6 +238,29 @@ public:
                 }
             }
         }
+    }
+    static QVector<QColor> zone3x3(QImage& input, int x, int y, int corner) {
+        QVector<QColor> result;
+        switch (corner) {
+        case 0:
+
+            break;
+        case 1:
+
+            break;
+        case 2:
+
+            break;
+        case 3:
+
+            break;
+        }
+    }
+    static void varstat(QVector<QColor> zone, QColor& average, int& variance) {
+
+    }
+    static void kuwahara(QImage& input, QImage& output) {
+
     }
 
 
