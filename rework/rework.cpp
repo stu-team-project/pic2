@@ -16,11 +16,12 @@ rework::rework(QWidget *parent)
     ui.comboBox->addItem("Dithering-cmyk");
     ui.comboBox->addItem("Strong edge");
     ui.comboBox->addItem("Kuwahara"); //5
+    ui.comboBox->addItem("ClosestRandColor");
     ui.comboBox->addItem("Comix");
-    ui.comboBox->addItem("Black and white"); //7
+    ui.comboBox->addItem("Black and white"); //8
     ui.comboBox->addItem("Inverse");
     ui.comboBox->addItem("RedFilter");
-    ui.comboBox->addItem("FindingEdge"); //10
+    ui.comboBox->addItem("FindingEdge"); //11
     ui.comboBox->addItem("Blur 3x3");
     ui.comboBox->addItem("Blur 5x5");
     ui.comboBox->addItem("Blur 7x7");
@@ -28,6 +29,8 @@ rework::rework(QWidget *parent)
 }
 rework::~rework(){}
 void rework::on_comboBox_activated(int index) {
+    ui.spinBox->setEnabled(false);
+    ui.spinBox_2->setEnabled(false);
     ui.imageLabel2->clear();
     image1 = image0;
     QVector<QVector<QColor>> to_modify;
@@ -46,46 +49,61 @@ void rework::on_comboBox_activated(int index) {
     case 2: Filters::closestcmyk(image1); break;
     case 3: Filters::dithercmyk(image1); break;
     case 4:
-        //Nikitas strong_edges
+        ui.spinBox->setEnabled(true);
+        ui.spinBox_2->setEnabled(true);
+        if (ui.spinBox->value() < 1) { ui.spinBox->setValue(1); }
+        if (ui.spinBox_2->value() < 10) { ui.spinBox_2->setValue(10); }
+        Filters::edgemask(image0, image1, ui.spinBox->value(), ui.spinBox_2->value());
         break;
     case 5: 
+        ui.spinBox->setEnabled(true);
         if (ui.spinBox->value() < 3) { ui.spinBox->setValue(3); }
+        if (ui.spinBox->value() > 5 ) { ui.spinBox->setValue(5); }
         Filters::kuwahara(image0, image1, ui.spinBox->value());
         break;
     case 6:
-        //Nikitas comix
+        //randcolors
+        ui.spinBox->setEnabled(true);
+        if (ui.spinBox->value() < 2) { ui.spinBox->setValue(2); }
+        Filters::closestRandColor(image0, image1, ui.spinBox->value());
         break;
     case 7:
+        //todo
+        ui.spinBox->setEnabled(true);
+        if (ui.spinBox->value() < 2) { ui.spinBox->setValue(2); }
+        Filters::comix(image0, image1, 1);
+        break;
+    case 8:
         to_modify = Filters::imageToVector(image1);
         Filters::blackAndWhite(&to_modify,image1.height(),image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 8:
+    case 9:
         to_modify = Filters::imageToVector(image1);
         Filters::inverse(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 9:
+    case 10:
         to_modify = Filters::imageToVector(image1);
         Filters::redFilter(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 10:
+    case 11:
         to_modify = Filters::imageToVector(image1);
         Filters::findingEdge(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 11:
+    case 12:
         to_modify = Filters::imageToVector(image1);
         Filters::blur3x3(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 12:
+    case 13:
         to_modify = Filters::imageToVector(image1);
         Filters::blur5x5(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 13:
+    case 14:
         to_modify = Filters::imageToVector(image1);
         Filters::blur7x7(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);

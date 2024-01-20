@@ -160,15 +160,18 @@ public:
         newColor.setBlue(bounds( color.blue() + errorB * weight / 16, 0, 255));
         return newColor;
     }
+    static int dist(QColor c1, QColor c2) {
+        return qPow(c1.red() - c2.red(), 2) +
+            qPow(c1.green() - c2.green(), 2) +
+            qPow(c1.blue() - c2.blue(), 2);
+    }
     static QColor findClosestColor(QColor& color, QVector<QColor>& colorset) {
         int minDist = INT_MAX;
         QColor closestColor;
         for (const QColor& col : colorset) {
-            int dist = qPow(col.red() - color.red(), 2) +
-                qPow(col.green() - color.green(), 2) +
-                qPow(col.blue() - color.blue(), 2);
-            if (dist < minDist) {
-                minDist = dist;
+            int distance = dist(col, color);
+            if (distance < minDist) {
+                minDist = distance;
                 closestColor = col;
             }
         }
@@ -294,6 +297,51 @@ public:
                 output.setPixelColor(i, j, selectedColor);
             }
         }
+    }
+    static bool isWithin(int a, int low, int high) {
+        if (low <= a && a <= high) {
+            return true;
+        }
+        return false;
+    }
+    static void edgemask(QImage& input, QImage& output, int lw, int dl) {
+        int w = input.width();
+        int h = input.height();
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                if (isWithin(i + lw, 0, w - 1) && isWithin(i - lw, 0, w - 1) &&
+                    isWithin(j + lw, 0, h - 1) && isWithin(j - lw, 0, h - 1)) {
+                    if (dist(input.pixelColor(i + lw, j), input.pixelColor(i - lw, j)) > dl ||
+                        dist(input.pixelColor(i, j + lw), input.pixelColor(i, j - lw)) > dl) {
+                        output.setPixelColor(i, j, QColor::fromCmyk(0, 0, 0, 255));
+                    }
+                    else {
+                        output.setPixelColor(i, j, QColor::fromCmyk(0, 0, 0, 0));
+                    }
+                }
+                else {
+                    output.setPixelColor(i, j, QColor::fromCmyk(0, 0, 0, 0));
+                }
+            }
+        }
+    }
+    static void closestRandColor(QImage& input, QImage& output, int colors) {
+        QVector<QColor> colorset;
+        int w = input.width();
+        int h = input.height();
+        for (int i = 0; i < colors; i++) {
+            colorset.append(input.pixelColor(randlimit(w), randlimit(h)));
+        }
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                QColor oldColor = input.pixelColor(x, y);
+                QColor newColor = findClosestColor(oldColor, colorset);
+                output.setPixelColor(x, y, newColor);
+            }
+        }
+    }
+    static void comix(QImage& input, QImage& output, int lw) { //lw linewidth
+        
     }
 
 
