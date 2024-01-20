@@ -297,7 +297,7 @@ public:
 
 
     // Janci filters:
-
+    //all members and methods must be static
     static void blackAndWhite(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width) {
         int gray, red, green, blue;
         QVector<QColor>tmpVec;
