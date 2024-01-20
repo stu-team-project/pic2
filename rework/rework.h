@@ -329,8 +329,27 @@ public:
         QVector<QColor> colorset;
         int w = input.width();
         int h = input.height();
-        for (int i = 0; i < colors; i++) {
-            colorset.append(input.pixelColor(randlimit(w), randlimit(h)));
+        if (colors > 1) {
+            for (int i = 0; i < colors; i++) {
+                colorset.append(input.pixelColor(randlimit(w), randlimit(h)));
+            }
+        }else if (colors == 1) {
+            colorset << QColor(Qt::red)
+                << QColor(Qt::green)
+                << QColor(Qt::blue)
+                << QColor(Qt::white)
+                << QColor(Qt::black)
+                << QColor(Qt::cyan)
+                << QColor(Qt::magenta)
+                << QColor(Qt::yellow);
+            for (int i = 0; i < 8; i++) {
+                QColor halfIntensityColor(
+                    colorset[i].red() / 2,
+                    colorset[i].green() / 2,
+                    colorset[i].blue() / 2
+                );
+                colorset << halfIntensityColor;
+            }
         }
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
@@ -340,8 +359,19 @@ public:
             }
         }
     }
-    static void comix(QImage& input, QImage& output, int lw) { //lw linewidth
-        
+    static void comix(QImage& image, QImage& edges, QImage& output) {
+        int w = image.width();
+        int h = image.height();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (edges.pixelColor(x, y).black() == 255) {
+                    output.setPixelColor(x, y, edges.pixelColor(x, y));
+                }
+                else {
+                    output.setPixelColor(x, y, image.pixelColor(x, y));
+                }
+            }
+        }
     }
 
 

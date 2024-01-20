@@ -64,14 +64,26 @@ void rework::on_comboBox_activated(int index) {
     case 6:
         //randcolors
         ui.spinBox->setEnabled(true);
-        if (ui.spinBox->value() < 2) { ui.spinBox->setValue(2); }
+        if (ui.spinBox->value() < 1) { ui.spinBox->setValue(1); }
         Filters::closestRandColor(image0, image1, ui.spinBox->value());
         break;
     case 7:
-        //todo
+        image2 = image0;
+        image3 = image0;
         ui.spinBox->setEnabled(true);
-        if (ui.spinBox->value() < 2) { ui.spinBox->setValue(2); }
-        Filters::comix(image0, image1, 1);
+        if (ui.spinBox->value() == 0 ) {
+            Filters::kuwahara(image0, image2, 5);
+            Filters::edgemask(image2, image3, 2, 8000);
+        }
+        else if (ui.spinBox->value() > 0) {
+            Filters::closestRandColor(image0, image2, ui.spinBox->value());
+            Filters::edgemask(image0, image3, 2, 5000);
+        }
+        else if (ui.spinBox->value() < 0) {
+            Filters::dithercmyk(image2);
+            Filters::edgemask(image0, image3, 2, 5000);
+        }
+        Filters::comix(image2, image3, image1);
         break;
     case 8:
         to_modify = Filters::imageToVector(image1);
