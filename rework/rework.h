@@ -242,12 +242,13 @@ public:
             }
         }
     }
-    static QVector<QColor> zone3x3(QImage& input, int x, int y, int lr, int ud) {
+    static QVector<QColor> zone(QImage& input, int x, int y, int lr, int ud, int ks) {
         // lr can be 0 for right or -1 for left
         // ud can be 0 for down or -1 for up
         QVector<QColor> result;
-        for (int i = 0 + lr*2; i < 3 + lr*2; i++) {
-            for (int j = 0 + ud*2; j < 3 + ud*2; j++) {
+        int shift = ks - 1;
+        for (int i = 0 + lr*shift; i < ks + lr*shift; i++) {
+            for (int j = 0 + ud*shift; j < ks + ud*shift; j++) {
                 if (x + i < input.width() && x + i >= 0 &&
                     y + j < input.width() && y + j >= 0) {
                     result.append(input.pixelColor(x + i, y + j));
@@ -274,16 +275,16 @@ public:
         variance = sumSquaredDifferences / zone.size();
         average = QColor(red / zone.size(), green / zone.size(), blue / zone.size());
     }
-    static void kuwahara(QImage& input, QImage& output) {
+    static void kuwahara(QImage& input, QImage& output, int ks) {
         for (int i = 0; i < input.width(); i++) {
             for (int j = 0; j < input.height(); j++) {
                 // collect data of the four zones
                 QColor A, B, C, D;
                 double var1, var2, var3, var4;
-                varstat(zone3x3(input, i, j, -1, -1), A, var1);
-                varstat(zone3x3(input, i, j, 0, -1), B, var2);
-                varstat(zone3x3(input, i, j, -1, 0), C, var3);
-                varstat(zone3x3(input, i, j, 0, 0), D, var4);
+                varstat(zone(input, i, j, -1, -1, ks), A, var1);
+                varstat(zone(input, i, j, 0, -1, ks), B, var2);
+                varstat(zone(input, i, j, -1, 0, ks), C, var3);
+                varstat(zone(input, i, j, 0, 0, ks), D, var4);
                 QColor selectedColor;
                 double minValue = std::min({ var1, var2, var3, var4 });
                 if (minValue == var1) { selectedColor = A; } 
@@ -459,6 +460,7 @@ public:
             tmpVec.clear();
         }
     }
+    
     static void blur3x3(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
     {
         blur(VecOfPixelsColor2D, height, width, 1);

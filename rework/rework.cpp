@@ -48,7 +48,10 @@ void rework::on_comboBox_activated(int index) {
     case 4:
         //Nikitas strong_edges
         break;
-    case 5: Filters::kuwahara(image0, image1); break;
+    case 5: 
+        if (ui.spinBox->value() < 3) { ui.spinBox->setValue(3); }
+        Filters::kuwahara(image0, image1, ui.spinBox->value());
+        break;
     case 6:
         //Nikitas comix
         break;
