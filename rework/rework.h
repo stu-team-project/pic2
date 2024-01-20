@@ -17,6 +17,8 @@
 #include <QVector>
 #include <QColor>
 
+#include <algorithm>
+
 class rework : public QMainWindow
 {
     Q_OBJECT
@@ -193,6 +195,7 @@ public:
     }
     static void dithercmyk(QImage& image) {
         // https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
+        // I use my own coefficients 7 3 3 3
         QVector<QColor> colorset = {
             QColor::fromRgb(0, 0, 0),      // Black
             QColor::fromRgb(255, 255, 255),// White
@@ -253,12 +256,43 @@ public:
         }
         return result;
     }
-    static void varstat(QVector<QColor> zone, QColor& average, int& variance) {
-        int red, gree, blue;
-        
+    static void varstat(QVector<QColor> zone, QColor& average, double& variance) {
+        int sum = 0;
+        int red=0, green=0, blue=0;
+        for (int i = 0; i < zone.size(); i++) {
+            sum += zone[i].value();
+            red += zone[i].red();
+            green += zone[i].green();
+            blue += zone[i].blue();
+        }
+        double mean = (1.0 * sum) / zone.size();
+        double sumSquaredDifferences = 0.0;
+        for (int i = 0; i < zone.size(); i++) {
+            double dif = mean - zone[i].value();
+            sumSquaredDifferences += dif * dif;
+        }
+        variance = sumSquaredDifferences / zone.size();
+        average = QColor(red / zone.size(), green / zone.size(), blue / zone.size());
     }
     static void kuwahara(QImage& input, QImage& output) {
-
+        for (int i = 0; i < input.width(); i++) {
+            for (int j = 0; j < input.height(); j++) {
+                // collect data of the four zones
+                QColor A, B, C, D;
+                double var1, var2, var3, var4;
+                varstat(zone3x3(input, i, j, -1, -1), A, var1);
+                varstat(zone3x3(input, i, j, 0, -1), B, var2);
+                varstat(zone3x3(input, i, j, -1, 0), C, var3);
+                varstat(zone3x3(input, i, j, 0, 0), D, var4);
+                QColor selectedColor;
+                double minValue = std::min({ var1, var2, var3, var4 });
+                if (minValue == var1) { selectedColor = A; } 
+                else if (minValue == var2) { selectedColor = B; }
+                else if (minValue == var3) { selectedColor = C; }
+                else { selectedColor = D; }
+                output.setPixelColor(i, j, selectedColor);
+            }
+        }
     }
 
 
