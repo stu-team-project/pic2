@@ -239,25 +239,23 @@ public:
             }
         }
     }
-    static QVector<QColor> zone3x3(QImage& input, int x, int y, int corner) {
+    static QVector<QColor> zone3x3(QImage& input, int x, int y, int lr, int ud) {
+        // lr can be 0 for right or -1 for left
+        // ud can be 0 for down or -1 for up
         QVector<QColor> result;
-        switch (corner) {
-        case 0:
-
-            break;
-        case 1:
-
-            break;
-        case 2:
-
-            break;
-        case 3:
-
-            break;
+        for (int i = 0 + lr*2; i < 3 + lr*2; i++) {
+            for (int j = 0 + ud*2; j < 3 + ud*2; j++) {
+                if (x + i < input.width() && x + i >= 0 &&
+                    y + j < input.width() && y + j >= 0) {
+                    result.append(input.pixelColor(x + i, y + j));
+                }
+            }
         }
+        return result;
     }
     static void varstat(QVector<QColor> zone, QColor& average, int& variance) {
-
+        int red, gree, blue;
+        
     }
     static void kuwahara(QImage& input, QImage& output) {
 
