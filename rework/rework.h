@@ -342,13 +342,13 @@ public:
                 << QColor(Qt::cyan)
                 << QColor(Qt::magenta)
                 << QColor(Qt::yellow);
+            //colorset << QColor(128, 128, 128);
             for (int i = 0; i < 8; i++) {
-                QColor halfIntensityColor(
-                    colorset[i].red() / 2,
-                    colorset[i].green() / 2,
-                    colorset[i].blue() / 2
-                );
-                colorset << halfIntensityColor;
+                QColor c1,c2,c3;
+                c1.setHsv(colorset[i].hue(), colorset[i].saturation(), colorset[i].value() * 3 / 4);
+                c2.setHsv(colorset[i].hue(), colorset[i].saturation(), colorset[i].value() * 2 / 4);
+                c3.setHsv(colorset[i].hue(), colorset[i].saturation(), colorset[i].value() * 1 / 4);
+                colorset << c1 << c2 << c3;
             }
         }
         for (int y = 0; y < h; y++) {
