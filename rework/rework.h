@@ -373,9 +373,39 @@ public:
             }
         }
     }
+    static double ssqrt(double x) { return sqrt(abs(x)) * (x > 0 ? 1 : -1); }
+    static double distance(double x, double y) { return sqrt(x * x + y * y); }
+    static void fisheye(QImage& input, QImage& output, int param) {
+        int w = input.width();
+        int h = input.height();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                output.setPixelColor(x, y, QColor::fromRgb(255, 255, 255));
+                //"T"ranslte coordinate into -1 1 range
+                double tx = 2.0 * x / w - 1;
+                double ty = 2.0 * y / h - 1;
+                //apply "S"quare for the coordinates
+                //double sx = tx * tx * (tx > 0 ? 1 : -1) * 2;//ssqrt(tx);
+                //double sy = ty * ty * (ty > 0 ? 1 : -1) * 2;//ssqrt(ty);
+                //apply square for the vector length
+                double d = distance(tx, ty);
+                double newd;
+                switch (param)
+                {
+                    case 0: newd = ssqrt(d); break;
+                    default: newd = d * d * (d > 0 ? 1 : -1) * param; break;
+                }
+                double sx = tx / d * newd;
+                double sy = ty / d * newd;
+                //scale "B"ack
+                double bx = (sx + 1) / 2 * w;
+                double by = (sy + 1) / 2 * h;
+                output.setPixelColor(x, y, input.pixelColor(bx, by));
+            }
+        }
+    }
 
-
-    // Janci filters:
+    // Jan filters:
     //all members and methods must be static
     static void blackAndWhite(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width) {
         int gray, red, green, blue;

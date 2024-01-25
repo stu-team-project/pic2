@@ -10,7 +10,7 @@ rework::rework(QWidget *parent)
     ui.saveButton->setEnabled(false);
     ui.comboBox->setEnabled(false);
     //fill combobox here with new filters
-    ui.comboBox->addItem("Sparse-cmyk"); //0
+    ui.comboBox->addItem("Sparse-cmyk"); 
     ui.comboBox->addItem("Dense-cmyk");
     ui.comboBox->addItem("Closest-cmyk");
     ui.comboBox->addItem("Dithering-cmyk");
@@ -18,13 +18,14 @@ rework::rework(QWidget *parent)
     ui.comboBox->addItem("Kuwahara"); //5
     ui.comboBox->addItem("ClosestRandColor");
     ui.comboBox->addItem("Comix");
-    ui.comboBox->addItem("Black and white"); //8
+    ui.comboBox->addItem("Black and white"); 
     ui.comboBox->addItem("Inverse");
-    ui.comboBox->addItem("RedFilter");
-    ui.comboBox->addItem("FindingEdge"); //11
+    ui.comboBox->addItem("RedFilter"); //10
+    ui.comboBox->addItem("FindingEdge"); 
     ui.comboBox->addItem("Blur 3x3");
     ui.comboBox->addItem("Blur 5x5");
     ui.comboBox->addItem("Blur 7x7");
+    ui.comboBox->addItem("Fisheye"); //15
 
 }
 rework::~rework(){}
@@ -119,6 +120,13 @@ void rework::on_comboBox_activated(int index) {
         to_modify = Filters::imageToVector(image1);
         Filters::blur7x7(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
+        break;
+
+    case 15:
+        ui.spinBox->setEnabled(true);
+        //ui.spinBox->setMaximum(2);
+        //ui.spinBox->setMinimum(0);
+        Filters::fisheye(image0, image1, ui.spinBox->value());
         break;
     default:
         break;
