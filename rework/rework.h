@@ -384,10 +384,7 @@ public:
                 //"T"ranslte coordinate into -1 1 range
                 double tx = 2.0 * x / w - 1;
                 double ty = 2.0 * y / h - 1;
-                //apply "S"quare for the coordinates
-                //double sx = tx * tx * (tx > 0 ? 1 : -1) * 2;//ssqrt(tx);
-                //double sy = ty * ty * (ty > 0 ? 1 : -1) * 2;//ssqrt(ty);
-                //apply square for the vector length
+                //apply "S"quare or Sqrt depending on the param
                 double d = distance(tx, ty);
                 double newd;
                 switch (param)

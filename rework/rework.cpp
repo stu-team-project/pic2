@@ -32,43 +32,61 @@ rework::~rework(){}
 void rework::on_comboBox_activated(int index) {
     ui.spinBox->setEnabled(false);
     ui.spinBox_2->setEnabled(false);
+    ui.spinBox_2->setVisible(false);
     ui.imageLabel2->clear();
     image1 = image0;
     QVector<QVector<QColor>> to_modify;
     switch (index)
     {
     case 0:
+        ui.errorLabel->setText("Nikita's first attempt at CMYK");
         to_modify = Filters::imageToVector(image1);
         Filters::sparsecmyk(&to_modify);
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 1:
+        ui.errorLabel->setText("Nikita's second attempt at CMYK");
         to_modify = Filters::imageToVector(image1);
         Filters::densecmyk(&to_modify);
         image1 = Filters::vectorToImage(to_modify);
         break;
-    case 2: Filters::closestcmyk(image1); break;
-    case 3: Filters::dithercmyk(image1); break;
+    case 2: 
+        ui.errorLabel->setText("Nikita's closest CMYK color");
+        Filters::closestcmyk(image1); 
+        break;
+    case 3: 
+        ui.errorLabel->setText("Nikita's third attempt at CMYK");
+        Filters::dithercmyk(image1); 
+        break;
     case 4:
+        ui.errorLabel->setText("Nikita's strong edge. Recommended values: 1-10 for the first parameter aka linewidth, 100-90000 for the second parameter aka sensitivity.");
         ui.spinBox->setEnabled(true);
         ui.spinBox_2->setEnabled(true);
-        if (ui.spinBox->value() < 1) { ui.spinBox->setValue(1); }
-        if (ui.spinBox_2->value() < 10) { ui.spinBox_2->setValue(10); }
+        ui.spinBox->setMaximum(10);
+        ui.spinBox->setMinimum(1);
+
+        ui.spinBox_2->setVisible(true);
+        ui.spinBox_2->setMaximum(90000);
+        ui.spinBox_2->setMinimum(100);
         Filters::edgemask(image0, image1, ui.spinBox->value(), ui.spinBox_2->value());
         break;
     case 5: 
+        ui.errorLabel->setText("Nikita's Kuwahara filter. Recommended values 2..5");
         ui.spinBox->setEnabled(true);
-        if (ui.spinBox->value() < 3) { ui.spinBox->setValue(3); }
+        if (ui.spinBox->value() < 2) { ui.spinBox->setValue(2); }
         if (ui.spinBox->value() > 5 ) { ui.spinBox->setValue(5); }
         Filters::kuwahara(image0, image1, ui.spinBox->value());
         break;
     case 6:
-        //randcolors
+        ui.errorLabel->setText("Nikita's continuation in ClosestColor. Click again for new  random result. Recommended values 16-30. If set 1 uses a preprepared color collection.");
         ui.spinBox->setEnabled(true);
+        ui.spinBox->setMaximum(255);
+        ui.spinBox->setMinimum(1);
         if (ui.spinBox->value() < 1) { ui.spinBox->setValue(1); }
         Filters::closestRandColor(image0, image1, ui.spinBox->value());
         break;
     case 7:
+        ui.errorLabel->setText("Nikita's Comix. =0 based on Kuwahara, >0 based on closestColor, <0 based on dithercmyk");
         image2 = image0;
         image3 = image0;
         ui.spinBox->setEnabled(true);
@@ -87,45 +105,53 @@ void rework::on_comboBox_activated(int index) {
         Filters::comix(image2, image3, image1);
         break;
     case 8:
+        ui.errorLabel->setText("Jan's Black and white filter");
         to_modify = Filters::imageToVector(image1);
         Filters::blackAndWhite(&to_modify,image1.height(),image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 9:
+        ui.errorLabel->setText("Jan's Inverse filter");
         to_modify = Filters::imageToVector(image1);
         Filters::inverse(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 10:
+        ui.errorLabel->setText("Jan's Red filter");
         to_modify = Filters::imageToVector(image1);
         Filters::redFilter(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 11:
+        ui.errorLabel->setText("Jan's finding edge filter");
         to_modify = Filters::imageToVector(image1);
         Filters::findingEdge(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 12:
+        ui.errorLabel->setText("Jan's blur 3x3 filter");
         to_modify = Filters::imageToVector(image1);
         Filters::blur3x3(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 13:
+        ui.errorLabel->setText("Jan's blur 5x5 filter");
         to_modify = Filters::imageToVector(image1);
         Filters::blur5x5(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
     case 14:
+        ui.errorLabel->setText("Jan's blur 7x7 filter");
         to_modify = Filters::imageToVector(image1);
         Filters::blur7x7(&to_modify, image1.height(), image1.width());
         image1 = Filters::vectorToImage(to_modify);
         break;
 
     case 15:
+        ui.errorLabel->setText("Nikita's Fisheye filter. Recommended values 0..2");
         ui.spinBox->setEnabled(true);
-        //ui.spinBox->setMaximum(2);
-        //ui.spinBox->setMinimum(0);
+        ui.spinBox->setMaximum(2);
+        ui.spinBox->setMinimum(0);
         Filters::fisheye(image0, image1, ui.spinBox->value());
         break;
     default:
