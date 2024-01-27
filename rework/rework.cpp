@@ -196,22 +196,32 @@ ui.imageLabel2->setPixmap(QPixmap::fromImage(image1));*/
 void rework::on_saveButton_clicked() {
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("Images (*.png *.jpg *.bmp *.ppm);;All Files (*)"));
     if (filePath.isEmpty()) {
-        ui.errorLabel->setText("filepath empty");
+        ui.errorLabel->setText("File path is empty");
         return;
     }
+    QString fileExtension = QFileInfo(filePath).suffix().toLower();
+
     QImageWriter imageWriter(filePath);
-    imageWriter.setFormat("png");
-    //imageWriter.setQuality(80);
-    if (imageWriter.format().isEmpty()) {
-        ui.errorLabel->setText("format empty");
-        return;
-    }
-    if (imageWriter.write(image1)) {
-        // Image saved successfully
-        ui.errorLabel->setText("saved");
+
+    if (!fileExtension.isEmpty()) {
+        imageWriter.setFormat(fileExtension.toUtf8());
     }
     else {
-        ui.errorLabel->setText("Writer failed: " + imageWriter.errorString());
+        ui.errorLabel->setText("Unknown format");
+        return;
+    }
+
+    if (!image1.isNull()) {
+        if (imageWriter.write(image1)) {
+            // Image saved successfully
+            ui.errorLabel->setText("Saved");
+        }
+        else {
+            ui.errorLabel->setText("Failed to write image: " + imageWriter.errorString());
+        }
+    }
+    else {
+        ui.errorLabel->setText("Image is null");
     }
 }
 
