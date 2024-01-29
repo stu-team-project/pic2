@@ -26,6 +26,8 @@ rework::rework(QWidget *parent)
     ui.comboBox->addItem("Blur 5x5");
     ui.comboBox->addItem("Blur 7x7");
     ui.comboBox->addItem("Fisheye"); //15
+    ui.comboBox->addItem("Green Filter"); //16
+    ui.comboBox->addItem("Blue Filter"); //17
 
 }
 rework::~rework(){}
@@ -153,6 +155,18 @@ void rework::on_comboBox_activated(int index) {
         ui.spinBox->setMaximum(2);
         ui.spinBox->setMinimum(0);
         Filters::fisheye(image0, image1, ui.spinBox->value());
+        break;
+    case 16:
+        ui.errorLabel->setText("Jan's Green filter");
+        to_modify = Filters::imageToVector(image1);
+        Filters::greenFilter(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
+        break;
+    case 17:
+        ui.errorLabel->setText("Jan's Blue filter");
+        to_modify = Filters::imageToVector(image1);
+        Filters::blueFilter(&to_modify, image1.height(), image1.width());
+        image1 = Filters::vectorToImage(to_modify);
         break;
     default:
         break;

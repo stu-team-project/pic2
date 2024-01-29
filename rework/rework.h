@@ -452,7 +452,7 @@ public:
             tmpVec.clear();
         }
     }
-    static void redFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    /*static void redFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
     {
         int red, green, blue, average;
         QVector<QColor>tmpVec;
@@ -481,6 +481,100 @@ public:
                 redTmpColor.setBlue(blue);
 
                 tmpVec.append(redTmpColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }*/
+    static void redFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        int red, green, blue, average;
+        QVector<QColor>tmpVec;
+        QColor redTmpColor;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red = VecOfPixelsColor2D->at(i).at(j).red();
+                green = VecOfPixelsColor2D->at(i).at(j).green();
+                blue = VecOfPixelsColor2D->at(i).at(j).blue();
+
+                red = (red - blue) + (red - green);
+
+                if (red > 255)
+                {
+                    red = 255;
+                }
+
+                redTmpColor.setRed(red);
+                redTmpColor.setGreen(0);
+                redTmpColor.setBlue(0);
+
+                tmpVec.append(redTmpColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
+
+    static void greenFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        int red, green, blue, average;
+        QVector<QColor>tmpVec;
+        QColor TmpColor;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red = VecOfPixelsColor2D->at(i).at(j).red();
+                green = VecOfPixelsColor2D->at(i).at(j).green();
+                blue = VecOfPixelsColor2D->at(i).at(j).blue();
+
+                green = (green - blue) + (green - red);
+
+                if (green > 255)
+                {
+                    green = 255;
+                }
+
+                TmpColor.setRed(0);
+                TmpColor.setGreen(green);
+                TmpColor.setBlue(0);
+
+                tmpVec.append(TmpColor);
+            }
+            VecOfPixelsColor2D->replace(i, tmpVec);
+            tmpVec.clear();
+        }
+    }
+    static void blueFilter(QVector<QVector<QColor>>* VecOfPixelsColor2D, int height, int width)
+    {
+        int red, green, blue, average;
+        QVector<QColor>tmpVec;
+        QColor TmpColor;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                red = VecOfPixelsColor2D->at(i).at(j).red();
+                green = VecOfPixelsColor2D->at(i).at(j).green();
+                blue = VecOfPixelsColor2D->at(i).at(j).blue();
+
+                blue = (blue - red) + (blue - green) + 50;
+
+                if (blue > 255)
+                {
+                    blue = 255;
+                }
+
+                TmpColor.setRed(0);
+                TmpColor.setGreen(0);
+                TmpColor.setBlue(blue);
+
+                tmpVec.append(TmpColor);
             }
             VecOfPixelsColor2D->replace(i, tmpVec);
             tmpVec.clear();
